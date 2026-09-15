@@ -1,0 +1,121 @@
+# 数据分析 Agent
+
+第三个小项目
+
+用自然语言查询数据库的智能 Agent。输入一句中文问题，Agent 自动生成 SQL、查询数据库、返回答案、绘制图表，并生成可下载的 Markdown 分析报告。
+
+## ✨ 功能
+
+- 🗣️ **自然语言转 SQL**：用中文提问，Agent 自动理解并生成 SQL
+- 📊 **自动可视化**：多行查询结果自动生成柱状图
+- 📝 **报告生成**：一键生成含图表的 Markdown 分析报告，可下载
+- 🔧 **多表 JOIN**：支持跨表复杂查询
+- 🎯 **错误自愈**：SQL 执行失败时 Agent 会自动修正重试
+
+## 🏗️ 架构
+
+```
+用户问题
+   ↓
+Gradio 界面 (app.py)
+   ↓
+LangChain SQL Agent (agent/sql_agent.py)
+   ↓
+通义千问 qwen3.7-flash（生成 SQL）
+   ↓
+SQLite 数据库（Chinook）
+   ↓
+结果 → 文字回答 + Plotly 图表 + Markdown 报告
+```
+
+## 🚀 快速开始
+
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/yuchentongqi/data-analyst-agent.git
+cd data-analyst-agent
+```
+
+### 2. 创建虚拟环境
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# Mac/Linux
+source .venv/bin/activate
+```
+
+### 3. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. 配置环境变量
+
+在项目根目录创建 `.env` 文件，填入你的阿里云百炼 API Key：
+
+```
+DASHSCOPE_API_KEY=sk-你的Key
+MODEL_NAME=qwen3.7-flash
+BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+```
+
+没有 Key？去 [阿里云百炼](https://bailian.console.aliyun.com/) 免费注册获取，新用户有免费额度。
+
+### 5. 下载示例数据库
+
+```bash
+python -c "import requests; url='https://storage.googleapis.com/benchmarks-artifacts/chinook/Chinook.db'; r=requests.get(url); open('data/Chinook.db','wb').write(r.content); print('下载完成')"
+```
+
+### 6. 启动
+
+```bash
+python app.py
+```
+
+浏览器打开 `http://127.0.0.1:7860`。
+
+## 💡 使用示例
+
+- 数据库里一共有多少首歌曲？
+- 销量最高的前5位艺术家是谁？
+- 各个国家的客户消费排名
+- 平均每首歌多长？
+
+## 📁 项目结构
+
+```
+data-analyst-agent/
+├── app.py                  # Gradio 界面入口
+├── agent/
+│   ├── __init__.py
+│   └── sql_agent.py        # Agent 核心逻辑
+├── data/
+│   └── Chinook.db          # SQLite 示例数据库
+├── reports/                # 生成的报告（不传 Git）
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
+
+## 🛠️ 技术栈
+
+| 组件 | 用途 |
+|---|---|
+| [LangChain](https://github.com/langchain-ai/langchain) | Agent 编排框架 |
+| [通义千问](https://bailian.console.aliyun.com/) | 大语言模型，生成 SQL 和报告 |
+| [Gradio](https://gradio.app/) | Web 界面 |
+| [Plotly](https://plotly.com/python/) | 图表生成 |
+| [SQLite](https://www.sqlite.org/) | 数据库 |
+
+## 🗄️ 数据库说明
+
+项目使用 [Chinook 示例数据库](https://github.com/lerocha/chinook-database)，一个模拟的数字媒体商店，包含 11 张表（艺术家、专辑、歌曲、客户、订单等）。所有数据均为虚构，可放心使用。
+
+## 📄 License
+
+MIT
